@@ -6,29 +6,24 @@ sudo: required
 dist: bionic
 compiler:
   - clang
-
 matrix:
-    include:
-      - os: osx
-        compiler: clang
-        osx_image: xcode6.4
-        env: BUILD_TYPE="Release"
-      - os: osx
-        compiler: clang
-        osx_image: xcode8
-        env: BUILD_TYPE="Release"
-      # - os: osx
-      #   compiler: clang
-      #   osx_image: xcode9.4
-      #   env: BUILD_TYPE="Release"
-      # - os: osx
-      #   compiler: clang
-      #   osx_image: xcode10.3
-      #   env: BUILD_TYPE="Release"
+  include:
+    - os: osx
+      compiler: clang
+      osx_image: xcode8
+      env: BUILD_TYPE="Release"
+    # - os: osx
+    #   compiler: clang
+    #   osx_image: xcode9.4
+    #   env: BUILD_TYPE="Release"
+    - os: osx
+      compiler: clang
+      osx_image: xcode10.3
+      env: BUILD_TYPE="Release"
 
-before_install:
-    - brew install cmake || brew upgrade cmake
-    - cmake --version
+install:
+  - HOMEBREW_NO_AUTO_UPDATE=1 brew install cmake
+  - cmake --version
 
 before_script:
   - cd "${TRAVIS_BUILD_DIR}"
@@ -40,15 +35,13 @@ before_script:
 script:
   - cmake --build build
 
-after_script:
+after_success:
   - cd build
   - make install DESTDIR=../dist
   - cd ../dist
   - ls -l usr/local/lib
   - zip -r cfdjs-${$TRAVIS_OS_NAME}-static-${TRAVIS_CPU_ARCH}-${TRAVIS_OSX_IMAGE}.zip
 
-# https://docs.travis-ci.com/user/deployment-v2/providers/releases/
-# https://qiita.com/sanemat/items/cbea8d3caa908e7422a0
 before_deploy:
   # Set up git user name and tag this commit
   - git config --local user.name "fujita-cg"
@@ -64,3 +57,6 @@ deploy:
   on:
     tags: true
     repo: fujita-cg/cfd-js
+
+# https://docs.travis-ci.com/user/deployment-v2/providers/releases/
+# https://qiita.com/sanemat/items/cbea8d3caa908e7422a0
