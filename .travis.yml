@@ -1,6 +1,6 @@
 branches:
   only:
-    - feature/test-release
+    - master
 language: cpp
 sudo: required
 dist: bionic
