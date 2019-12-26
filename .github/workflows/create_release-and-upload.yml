@@ -16,6 +16,9 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v1
+    - uses: actions/setup-node@v1
+      with:
+        node-version: 12
     - name: Get the version
       id: get_version
       run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
@@ -105,3 +108,54 @@ jobs:
         path: /tmp/cfd/upload_url.txt
     - name: ubuntu-after
       run: rm -rf cache/cmake/cmake-$CMAKE_VERSION-Linux-x86_64
+
+  upload-object-windows-vs2019:
+    name: upload-object-win-vs2019
+    needs: upload-object-ubuntu
+    runs-on: windows-latest
+
+    steps:
+    - name: checkout
+      uses: actions/checkout@v1
+    - uses: actions/setup-node@v1
+      with:
+        node-version: 12
+    - name: Get the version
+      id: get_version
+      run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+    - name: create folder
+      run: mkdir dist
+    - name: cmake-build
+      id: cmake_build
+      run: |
+        npm install
+        cmake -DCMAKE_INSTALL_PREFIX="./dist" --install wrap_js/build
+        cmake --install wrap_js/build
+        CURRENT_DIR=`cd`
+        echo ::set-output name=CURRENT_DIR::$CURRENT_DIR
+    - name: create archive file
+      run: |
+        cd dist
+        Compress-Archive -Path ./* -DestinationPath ../cfd.zip
+        cd ..
+        echo "---- dump zip file ----"
+        dir .
+    - name: download artifact
+      uses: actions/download-artifact@v1
+      with:
+        name: artifact-upload_url
+    - name: dump upload url
+      id: get_url
+      run: |
+        url=`cat artifact-upload_url/upload_url.txt`
+        echo ::set-output name=upload_url::$url
+    - name: Upload Release Asset
+      id: upload-release-asset 
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.get_url.outputs.upload_url }}
+        asset_path: /tmp/cfd/cfd.zip
+        asset_name: cfdgo-${{ steps.get_version.outputs.VERSION }}-windows-vs2019-x86_64.zip
+        asset_content_type: application/zip
