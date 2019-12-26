@@ -25,7 +25,9 @@ addons:
     packages:
       - cmake
     # need update only if osx-image is xcode8
-    update: env(TRAVIS_OSX_IMAGE) == "xcode8"
+    update: 
+      - true
+      if: env(TRAVIS_OSX_IMAGE) = "xcode8"
 
 before_install:
   - echo "${TRAVIS_OS_NAME} ${TRAVIS_OSX_IMAGE} ${TRAVIS_CPU_ARCH} ${GIT_USER_NAME} ${GIT_USER_EMAIL} ${GITHUB_RELEASE_SECRET_API_KEY} ${GITHUB_RELEASE_TAG}"
