@@ -2,6 +2,8 @@ branches:
   only:
     - /^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/
 language: cpp
+cache:
+  homebrew: true
 sudo: required
 dist: bionic
 compiler:
@@ -25,7 +27,7 @@ addons:
 before_install:
 
 install:
-  - "cmake version check"
+  - echo "cmake version check"
   - cmake --version
 
 after_install:
