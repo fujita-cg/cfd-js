@@ -1,20 +1,18 @@
 branches:
   only:
-    - master
     - /^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/
 language: cpp
 sudo: required
 compiler:
   - clang
+env:
+  global:
+    - GITHUB_RELEASE_SECRET_API_KEY=c6LX3E0hb1GBitAb4aYsU+Y21kbaBd0dpLhsLRRbmYDzmM1QLYRlUcS88g5k4BVySuqXwT0WMtf0qFaYdamHRQ5aOWA74DOhfUM33AdQ9+cwsE9eV4VxsDTHn6VcRc3pVtmA7FHjUSCR+tYJhBYH6QU9coKz6CNRhozqXFlLRn+bnBCyxrAd8C8QRPZkwDQH9sEwYHwsmscoTHqx5zObVzL+IJ8c6EbY1RcXqlJhEeFO1NiQoWFBNfwuxxdX2V6BtxL/pPWJIu63+b3jWcn899J8b6R1XXds7CNp07pTNcqlR4cNkXz4iAydkNtNwWcZhS5awju+pBXZlBe7LJXEuGFAWKoQwQzJujI158TLBAdU0NL7AAL5DtQX4Np/OpuwKYZXcIu/edK4JbQj+ApKGbQ63UdIs7BNa4A7c9lQ96i2+LnVjkSBpJ/aDBp/ouZlSo/KuV2G8KarkHddVUczE4wImcQ7sZYTTi8VTZh1oPmR76ma+piypeQRX5N43KjV60bk1sU4Z5+ZNn+elvpS/5/zEwcFxSQrInisViiL61bMNtMtbKcHJyHTAP/PlwWU6k3k64MFKS/4jHlXKEVs5JN574dxCzuc1oElplNa0ytC7ow32mhRP0B58iNDk3jc6jp8an7K25WyaWQ9juF7UT3afEShczTRjdRsArQAwgM=
 matrix:
   include:
     - os: osx
       compiler: clang
       osx_image: xcode8
-      env: BUILD_TYPE="Release"
-    - os: osx
-      compiler: clang
-      osx_image: xcode9.4
       env: BUILD_TYPE="Release"
 
 addons:
@@ -24,10 +22,10 @@ addons:
     # need update only if osx-image is xcode8
     update: 
       - true
-      if: env(TRAVIS_OSX_IMAGE) = "xcode8"
 
 before_install:
-  - echo "${TRAVIS_OS_NAME} ${TRAVIS_OSX_IMAGE} ${TRAVIS_CPU_ARCH} ${GIT_USER_NAME} ${GIT_USER_EMAIL} ${GITHUB_RELEASE_SECRET_API_KEY} ${GITHUB_RELEASE_TAG}"
+  - echo "${TRAVIS_OS_NAME} ${TRAVIS_OSX_IMAGE} ${TRAVIS_CPU_ARCH}"
+  - echo "cfdjs-${TRAVIS_OS_NAME}-static-${TRAVIS_CPU_ARCH}-${TRAVIS_OSX_IMAGE}.zip"
   - cmake --version
 
 install:
@@ -50,10 +48,6 @@ after_success:
   - cd ../dist
   - ls -l usr/local/lib
   - zip -r "cfdjs-${TRAVIS_OS_NAME}-static-${TRAVIS_CPU_ARCH}-${TRAVIS_OSX_IMAGE}.zip" usr
-  - git config --local user.name ${GIT_USER_NAME}
-  - git config --local user.email ${GIT_USER_EMAIL}
-  - git tag ${GITHUB_RELEASE_TAG}
-  - git push origin ${GITHUB_RELEASE_TAG}
 
 before_deploy:
 
